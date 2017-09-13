@@ -7,12 +7,19 @@ client.setEncoding('utf8');
 
 client.connect(port, function() {
     console.log('Connected');
-    client.write('\r\nHello, Server!\r\nLove,\r\nClient.\r\n');
+    client.write('QA');
 });
 
 client.on('data', function(data) {
     console.log(data);
-    client.destroy();
+    if(data === 'ACK')
+    {
+
+    }
+    else
+    {
+        client.destroy();
+    }
 });
 
 client.on('close', function() {
