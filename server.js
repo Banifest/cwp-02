@@ -1,3 +1,5 @@
+import * as fs from "fs";
+
 const net = require('net');
 const port = 8124;
 
@@ -12,6 +14,7 @@ const server = net.createServer((client) => {
         if(data === 'QA')
         {
             client.write('ACK');
+
         }
         else
         {
