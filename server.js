@@ -1,5 +1,3 @@
-import * as fs from "fs";
-
 const net = require('net');
 const port = 8124;
 
@@ -20,7 +18,6 @@ const server = net.createServer((client) => {
         {
             client.write('DEC');
         }
-        client.write('\r\nHello!\r\nRegards,\r\nServer\r\n');
     });
 
     client.on('end', () => console.log('Client disconnected'));

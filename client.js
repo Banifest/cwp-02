@@ -1,8 +1,21 @@
 const net = require('net');
 const fs = require("fs");
+const shuffle = require('shuffle-array');
 const port = 8124;
 
 const client = new net.Socket();
+
+process.on('uncaughtException', function (err) {
+    console.log(err);
+});
+
+class pair{
+    constructor(f, s)
+    {
+        this.first = f;
+        this.second = s;
+    }
+}
 
 client.setEncoding('utf8');
 
@@ -13,27 +26,36 @@ client.connect(port, function() {
 
 client.on('data', function(data) {
     let questions = [];
-    let answers = [];
-    fs.readFile("qa.json", (file)=>{
+    fs.readFile("qa.json", (err, file)=>{
         JSON.parse(file, (q,a)=>{
-            if(q != undefined)
+            if(q != undefined || a != '{}')
             {
-                questions.append(q);
-                answers.append(a);
+                questions.push(new pair(q,a));
+              //  console.log(q);
+                //console.log(a);
             }
-        })
-    });
-    console.log(data);
-    if(data === 'ACK')
-    {
-        fs.readFile('qa.json', (err, questions)=>{
-
         });
-    }
-    else
-    {
+
+        shuffle(questions);
+
+        for(const que of questions)
+        {
+            console.log(que);
+        }
+
+        console.log(data);
+        if(data === 'ACK')
+        {
+
+        }
+        else
+        {
+            client.destroy();
+        }
         client.destroy();
-    }
+        });
+
+
 });
 
 client.on('close', function() {
