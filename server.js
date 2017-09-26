@@ -2,6 +2,8 @@ const net = require('net');
 const fs = require("fs");
 const port = 8124;
 
+let seed = 826;
+
 function writeLog(str, client) {
     fs.appendFileSync(`${client.id.toString()}.log`, str.toString() + '\n\r')
 }
@@ -11,10 +13,9 @@ const server = net.createServer((client) => {
     client.setEncoding('utf8');
 
     client.on('data', (data) => {
-        console.log(data);
         if(!client.ACK)
         {
-            client.id = Date.now();
+            client.id = Date.now() + seed++;
             writeLog(`id = ${client.id.toString()}`, client);
             if(data === 'QA')
             {
