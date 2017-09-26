@@ -9,14 +9,31 @@ const server = net.createServer((client) => {
 
     client.on('data', (data) => {
         console.log(data);
-        if(data === 'QA')
+        if(!client.ACK)
         {
-            client.write('ACK');
-
+            if(data === 'QA')
+            {
+                client.write('ACK');
+                client.ACK = true;
+            }
+            else
+            {
+                client.write('DEC');
+                client.ACK = false;
+            }
         }
         else
         {
-            client.write('DEC');
+            if(Math.random()>0.5)
+            {
+                console.log('Да');
+                client.write('да');
+            }
+            else
+            {
+                console.log('Нет');
+                client.write('нет');
+            }
         }
     });
 

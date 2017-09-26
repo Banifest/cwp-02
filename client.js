@@ -19,43 +19,45 @@ class pair{
 
 client.setEncoding('utf8');
 
+let questions = [];
 client.connect(port, function() {
-    console.log('Connected');
-    client.write('QA');
-});
-
-client.on('data', function(data) {
-    let questions = [];
-    fs.readFile("qa.json", (err, file)=>{
-        JSON.parse(file, (q,a)=>{
-            if(q != undefined || a != '{}')
-            {
-                questions.push(new pair(q,a));
-              //  console.log(q);
-                //console.log(a);
+    fs.readFile("qa.json", (err, file)=> {
+        JSON.parse(file, (q, a) => {
+            if (q != undefined || a != {}) {
+                questions.push(new pair(q, a));
             }
         });
-
+        questions.pop();
         shuffle(questions);
+        console.log('Connected');
+        client.write('QA');
+    });
+});
 
-        for(const que of questions)
-        {
-            console.log(que);
-        }
 
-        console.log(data);
-        if(data === 'ACK')
-        {
-
-        }
-        else
-        {
-            client.destroy();
-        }
+let iter = 0;
+client.on('data', function(data) {
+    if(data === 'ACK' )
+    {
+        client.ACK = true;
+        console.log(questions[iter].first);
+        client.write(questions[iter].first);
+        iter++;
+    }
+    else if (client.ACK === true && iter < questions.length)
+    {
+        console.log(data.toString());
+        console.log(questions[iter - 1].second === data.toString() ? 'верно':'ложь')
+        console.log(questions[iter].first);
+        client.write(questions[iter].first);
+        iter++;
+    }
+    else
+    {
+        console.log(data.toString());
+        console.log(questions[iter - 1].second === data.toString() ? 'верно':'ложь')
         client.destroy();
-        });
-
-
+    }
 });
 
 client.on('close', function() {
